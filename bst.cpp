@@ -1,5 +1,4 @@
 #include <iostream>
-#include <stack>
 #include "bst.hpp"
 
 template <typename T>
@@ -57,28 +56,30 @@ void BinarySearchTree<T>::insert(const T value){
         this->root = newNode;
     }
     else {
-        std::stack<Node<T>*> treeNodeStack;
-        treeNodeStack.push(this->root);
-        while(treeNodeStack.size() > 0){
-            Node<T>* curr = treeNodeStack.top();
-            treeNodeStack.pop();
+        Node<T>* curr = root;
+        Node<T>* parent = nullptr;
+        while(curr != nullptr){
+            //Keeps track of which parent node is the new node going to be added to 
+            parent = curr;
 
-            if(curr->left != nullptr && compare(curr->value, newNode->value)){
-                
-                treeNodeStack.push(curr->left);
+            if(curr->value == newNode->value){
+                return;
             }
-            if(curr->right != nullptr && compare(newNode->value, curr->value)) {
-                
-                treeNodeStack.push(curr->right);
+
+            //compare(curr->value, newNode->value) root.value <= value 
+            if(compare(curr->value, newNode->value)){
+                curr = curr->right;
             }
-            if(curr->left == nullptr && curr->right == nullptr && compare(curr->value, newNode->value)) {
-                
-                curr->left = newNode;
+            //compare(curr->value, newNode->value) value <= root.value
+            else if(compare(newNode->value, curr->value)) {
+                curr = curr->left;
             }
-            if(curr->left == nullptr && curr->right == nullptr && compare(newNode->value, curr->value)) {
-                
-                curr->right = newNode;
-            }
+        }
+        if(compare(newNode->value, parent->value)) {
+            parent->left = newNode;
+        }
+        else {
+            parent->right = newNode;
         }
     }
     this->size++;
@@ -110,6 +111,9 @@ void BinarySearchTree<T>::postOrderTraversal(){
 //You don't need a stack to go through a binary search tree (This is not dfs/bfs)
  
 int main() {
+    std::cout << "Welcome To The Binary Search Tree Library\n" ;
+
+    int i = 2;
     BinarySearchTree<int> bst;
     bst.insert(50);
     bst.insert(30);
@@ -121,23 +125,13 @@ int main() {
 
     Node<int>* root = bst.getRoot();
     std::cout << bst.getSize() << '\n';
-    if(root -> right -> right  != nullptr) {
-        std::cout << root->right->right->value << '\n';
+    if(root -> right != nullptr) {
+        std::cout << root->right->value << '\n';
     }
 
-    std::stack<Node<int>*> st;
-    st.push(root);
-    while(!st.empty()) {
-        Node<int>* curr = st.top();
-        st.pop();
-        std::cout << "Value: " << curr->value <<'\n';
-        if(curr->left != nullptr) {
-            st.push(curr->left);
-        }
-        if(curr->right != nullptr) {
-            st.push(curr->right);
-        }
-    }
+    std::cout << "End of program\n";
+
+    
 
     
     return 0;
