@@ -70,7 +70,7 @@ void BinarySearchTree<T>::insert(const T value){
             if(compare(curr->value, newNode->value)){
                 curr = curr->right;
             }
-            //compare(curr->value, newNode->value) value <= root.value
+            //compare(newNode->value, curr->value) value <= root.value
             else if(compare(newNode->value, curr->value)) {
                 curr = curr->left;
             }
@@ -90,6 +90,74 @@ void BinarySearchTree<T>::insert(const T value){
 
 template <typename T>
 void BinarySearchTree<T>::remove(const T value){
+    Node<T>* curr = this->getRoot();
+    Node<T>* parent = nullptr;
+
+    while(curr != nullptr) {
+        if(curr->value == value) {
+            //Current value is less than
+            if(curr->left == nullptr && curr->right == nullptr && compare(curr->value, parent->value )){
+                parent->left = nullptr;
+                delete curr;
+            }
+            else if(curr->left == nullptr && curr->right == nullptr) {
+                parent->right = nullptr;
+                delete curr;
+            }
+            else if(curr->left != nullptr && curr->right == nullptr ) {
+                if(compare(curr->value, parent->value )) {
+                    parent->left = curr->left;
+                }
+                else {
+                    parent->right = curr->left;
+                }
+                
+                delete curr;
+            }
+            else if(curr->left == nullptr && curr->right != nullptr ) {
+                if(compare(curr->value, parent->value )) {
+                    parent->left = curr->right;
+                }
+                else {
+                    parent->right = curr->right;
+                }
+                
+                delete curr;
+            }
+            else {
+                Node<T>* greatestElementOnLeft = curr->left;
+                Node<T>* parentGreatestElementOnLeft = nullptr;
+                while(greatestElementOnLeft->right != nullptr){
+                    parentGreatestElementOnLeft = greatestElementOnLeft;
+                    greatestElementOnLeft = greatestElementOnLeft->right;
+                }
+                parentGreatestElementOnLeft->left = greatestElementOnLeft->right;
+                greatestElementOnLeft->right = curr->right;
+                greatestElementOnLeft->left = curr->left;
+
+                //If curr is less than root value
+                if(compare(curr->value, parent->value)){
+                    parent->left = greatestElementOnLeft;
+                }
+                else {
+                    parent->right = greatestElementOnLeft;
+                }
+
+                delete curr;
+            }
+            this->size--;
+            return;
+        }
+        else if(this->compare(curr->value, value)){
+            parent = curr;
+            curr = curr->left;
+        }
+        else {
+            parent = curr;
+            curr = curr->right;
+        }
+
+    }
     
 }
 
@@ -124,10 +192,12 @@ int main() {
     bst.insert(80);
 
     Node<int>* root = bst.getRoot();
+    bst.remove(50);
     std::cout << bst.getSize() << '\n';
     if(root -> right != nullptr) {
         std::cout << root->right->value << '\n';
     }
+    
 
     std::cout << "End of program\n";
 
